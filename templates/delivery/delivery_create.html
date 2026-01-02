@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Schedule New Delivery</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:delivery_list' %}">Deliveries</a></li>
+                    <li class="breadcrumb-item active">New Delivery</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Delivery Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="deliveryForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.hire_order|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.transport_request|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.delivery_type|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.departure_time|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.driver_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.driver_phone|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.truck_registration|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.delivery_address|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Safety Inspection</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <div class="form-check form-switch">
+                                                    {{ form.is_safe_for_transport }}
+                                                    <label class="form-check-label" for="id_is_safe_for_transport">
+                                                        Load is safe for transport
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                {{ form.inspection_notes|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Schedule Delivery
+                            </button>
+                            <a href="{% url 'delivery:delivery_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div id="orderInfo" class="text-muted">
+                        <p class="mb-3">Select an order to view details...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Transport Request Information</h5>
+                </div>
+                <div class="card-body">
+                    <div id="transportRequestInfo" class="text-muted">
+                        <p class="mb-3">Select a transport request to view details...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Delivery Checklist</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check1">
+                                <label class="form-check-label" for="check1">
+                                    Valid driver's license checked
+                                </label>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check2">
+                                <label class="form-check-label" for="check2">
+                                    Truck registration valid
+                                </label>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check3">
+                                <label class="form-check-label" for="check3">
+                                    Load properly secured
+                                </label>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check4">
+                                <label class="form-check-label" for="check4">
+                                    Delivery documents prepared
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Load order details when order is selected
+    $('#id_hire_order').change(function() {
+        var orderId = $(this).val();
+        if (orderId) {
+            $.ajax({
+                url: '{% url "delivery:get_order_details" 0 %}'.replace('0', orderId),
+                type: 'GET',
+                success: function(data) {
+                    $('#orderInfo').html(`
+                        <h6>${data.order_number}</h6>
+                        <p><strong>Client:</strong> ${data.client_name}</p>
+                        <p><strong>Address:</strong><br>${data.address}</p>
+                    `);
+                    
+                    // Auto-fill delivery address
+                    if (data.address) {
+                        $('#id_delivery_address').val(data.address);
+                    }
+                    
+                    // Load transport requests for this order
+                    loadTransportRequests(orderId);
+                }
+            });
+        } else {
+            $('#orderInfo').html('<p class="mb-3">Select an order to view details...</p>');
+            $('#transportRequestInfo').html('<p class="mb-3">Select a transport request to view details...</p>');
+        }
+    });
+    
+    // Load transport request details
+    $('#id_transport_request').change(function() {
+        var requestId = $(this).val();
+        if (requestId) {
+            // Here you would typically make another AJAX call
+            // For now, just show the selected value
+            var selectedText = $(this).find('option:selected').text();
+            $('#transportRequestInfo').html(`
+                <h6>${selectedText}</h6>
+                <p class="text-muted">Transport request details will be loaded here.</p>
+            `);
+        }
+    });
+    
+    function loadTransportRequests(orderId) {
+        $.ajax({
+            url: '{% url "delivery:get_order_details" 0 %}'.replace('0', orderId),
+            type: 'GET',
+            success: function(data) {
+                // Filter transport requests dropdown for this order
+                var $dropdown = $('#id_transport_request');
+                $dropdown.find('option').each(function() {
+                    var optionText = $(this).text();
+                    if (optionText.includes(data.order_number)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        });
+    }
+    
+    // Trigger change on page load if order is pre-selected
+    if ($('#id_hire_order').val()) {
+        $('#id_hire_order').trigger('change');
+    }
+});
+</script>
+{% endblock %}

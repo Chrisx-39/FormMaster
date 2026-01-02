@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Deliveries</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Deliveries</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'delivery:delivery_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Delivery
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-2">
+                    <label for="type" class="form-label">Type</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for value, label in delivery_type_choices %}
+                            <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="order" class="form-label">Order #</label>
+                    <input type="text" name="order" id="order" class="form-control" 
+                           value="{{ request.GET.order }}" placeholder="Order number">
+                </div>
+                <div class="col-md-2">
+                    <label for="delivery_number" class="form-label">Delivery #</label>
+                    <input type="text" name="delivery_number" id="delivery_number" class="form-control" 
+                           value="{{ request.GET.delivery_number }}" placeholder="Delivery number">
+                </div>
+                <div class="col-md-2">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" name="date" id="date" class="form-control" 
+                           value="{{ request.GET.date }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Deliveries Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Delivery #</th>
+                            <th>Order #</th>
+                            <th>Driver</th>
+                            <th>Truck</th>
+                            <th>Departure</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for delivery in deliveries %}
+                        <tr>
+                            <td>
+                                <strong>{{ delivery.delivery_number }}</strong>
+                            </td>
+                            <td>
+                                <a href="{% url 'hiring:order_detail' delivery.hire_order.pk %}">
+                                    {{ delivery.hire_order.order_number }}
+                                </a>
+                            </td>
+                            <td>{{ delivery.driver_name }}</td>
+                            <td>{{ delivery.truck_registration }}</td>
+                            <td>{{ delivery.departure_time }}</td>
+                            <td>
+                                <span class="badge bg-{% if delivery.delivery_type == 'OUTGOING' %}primary{% else %}warning{% endif %}">
+                                    {{ delivery.get_delivery_type_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if delivery.status == 'SCHEDULED' %}info{% elif delivery.status == 'IN_TRANSIT' %}primary{% elif delivery.status == 'DELIVERED' %}success{% elif delivery.status == 'CANCELLED' %}danger{% else %}secondary{% endif %}">
+                                    {{ delivery.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'delivery:delivery_detail' delivery.pk %}" 
+                                       class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if delivery.status != 'DELIVERED' and delivery.status != 'CANCELLED' %}
+                                    <a href="{% url 'delivery:delivery_update' delivery.pk %}" 
+                                       class="btn btn-outline-warning" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if delivery.status == 'IN_TRANSIT' %}
+                                    <form method="post" action="{% url 'delivery:delivery_mark_delivered' delivery.pk %}" 
+                                          class="d-inline" onsubmit="return confirm('Mark this delivery as delivered?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-success" title="Mark as Delivered">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <i class="fas fa-truck fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">No deliveries found.</p>
+                                <a href="{% url 'delivery:delivery_create' %}" class="btn btn-primary">
+                                    Schedule Your First Delivery
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Auto-submit form on filter change
+    $('#type, #status, #date').change(function() {
+        $(this).closest('form').submit();
+    });
+});
+</script>
+{% endblock %}

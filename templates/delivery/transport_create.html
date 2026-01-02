@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Create Transport Request</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:transport_list' %}">Transport Requests</a></li>
+                    <li class="breadcrumb-item active">Create</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Transport Request Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="transportRequestForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.hire_order|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.required_date|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.truck_type_required|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                {{ form.delivery_address|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                {{ form.special_instructions|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Create Transport Request
+                            </button>
+                            <a href="{% url 'delivery:transport_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div id="orderInfo" class="text-muted">
+                        <p class="mb-3">Select an order to view details...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'hiring:order_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-list-alt me-2"></i> View All Orders
+                        </a>
+                        <a href="{% url 'delivery:transport_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-truck me-2"></i> View Transport Requests
+                        </a>
+                        <a href="{% url 'delivery:delivery_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shipping-fast me-2"></i> View Deliveries
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Load order details when order is selected
+    $('#id_hire_order').change(function() {
+        var orderId = $(this).val();
+        if (orderId) {
+            $.ajax({
+                url: '{% url "delivery:get_order_details" 0 %}'.replace('0', orderId),
+                type: 'GET',
+                success: function(data) {
+                    $('#orderInfo').html(`
+                        <h6>${data.order_number}</h6>
+                        <p><strong>Client:</strong> ${data.client_name}</p>
+                        <p><strong>Address:</strong><br>${data.address}</p>
+                    `);
+                    
+                    // Auto-fill delivery address
+                    if (data.address) {
+                        $('#id_delivery_address').val(data.address);
+                    }
+                }
+            });
+        } else {
+            $('#orderInfo').html('<p class="mb-3">Select an order to view details...</p>');
+        }
+    });
+    
+    // Trigger change on page load if order is pre-selected
+    if ($('#id_hire_order').val()) {
+        $('#id_hire_order').trigger('change');
+    }
+});
+</script>
+{% endblock %}

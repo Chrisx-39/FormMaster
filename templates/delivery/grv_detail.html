@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Goods Received Voucher: {{ grv.grv_number }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:grv_list' %}">GRVs</a></li>
+                    <li class="breadcrumb-item active">{{ grv.grv_number }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                <a href="{% url 'delivery:grv_pdf' grv.pk %}" class="btn btn-success">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </a>
+                <a href="{% url 'delivery:grv_update' grv.pk %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'delivery:grv_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- GRV Details Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">GRV Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">GRV Number:</th>
+                                    <td><strong>{{ grv.grv_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Delivery Number:</th>
+                                    <td>
+                                        <a href="{% url 'delivery:delivery_detail' grv.delivery.pk %}">
+                                            {{ grv.delivery.delivery_number }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Order Number:</th>
+                                    <td>
+                                        <a href="{% url 'hiring:order_detail' grv.hire_order.pk %}">
+                                            {{ grv.hire_order.order_number }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Received Date:</th>
+                                    <td>{{ grv.received_date }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Received By:</th>
+                                    <td>{{ grv.received_by.get_full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Issued by Client:</th>
+                                    <td>
+                                        <span class="badge bg-{% if grv.issued_by_client %}success{% else %}warning{% endif %}">
+                                            {{ grv.issued_by_client|yesno:"Yes,No" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>All Items Received:</th>
+                                    <td>
+                                        <span class="badge bg-{% if grv.all_items_received %}success{% else %}warning{% endif %}">
+                                            {{ grv.all_items_received|yesno:"Yes,No" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Created:</th>
+                                    <td>{{ grv.created_at|timesince }} ago</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if grv.discrepancy_notes %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Discrepancy Notes:</h6>
+                            <div class="alert alert-warning">
+                                {{ grv.discrepancy_notes|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Items Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Received Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Expected</th>
+                                    <th>Received</th>
+                                    <th>Discrepancy</th>
+                                    <th>Condition</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in grv.items.all %}
+                                <tr class="{% if item.has_discrepancy %}table-warning{% endif %}">
+                                    <td>{{ item.material.name }}</td>
+                                    <td>{{ item.quantity_expected }}</td>
+                                    <td>{{ item.quantity_received }}</td>
+                                    <td>
+                                        {% if item.has_discrepancy %}
+                                        <span class="badge bg-danger">{{ item.get_discrepancy }}</span>
+                                        {% else %}
+                                        <span class="badge bg-success">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if item.condition_on_receipt == 'GOOD' %}success{% elif item.condition_on_receipt == 'FAIR' %}warning{% elif item.condition_on_receipt == 'POOR' %}danger{% else %}secondary{% endif %}">
+                                            {{ item.get_condition_on_receipt_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ item.notes|default:"-" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-box-open fa-2x text-muted mb-3"></i>
+                                        <p class="text-muted">No items recorded in this GRV.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            {% if grv.items.all %}
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th>Totals</th>
+                                    <th>{{ grv.items.all|sum:"quantity_expected" }}</th>
+                                    <th>{{ grv.items.all|sum:"quantity_received" }}</th>
+                                    <th>
+                                        {% with total_expected=grv.items.all|sum:"quantity_expected" total_received=grv.items.all|sum:"quantity_received" %}
+                                        <span class="badge bg-{% if total_expected == total_received %}success{% else %}danger{% endif %}">
+                                            {{ total_expected|add:total_received|floatformat }}
+                                        </span>
+                                        {% endwith %}
+                                    </th>
+                                    <th colspan="2"></th>
+                                </tr>
+                            </tfoot>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Actions Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'delivery:grv_pdf' grv.pk %}" 
+                           class="btn btn-success">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </a>
+                        
+                        <a href="{% url 'delivery:grv_update' grv.pk %}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit GRV
+                        </a>
+                        
+                        <a href="{% url 'delivery:delivery_detail' grv.delivery.pk %}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-truck"></i> View Delivery
+                        </a>
+                        
+                        <a href="{% url 'delivery:delivery_note_detail' grv.delivery.deliverynote_set.first.pk %}" 
+                           class="btn btn-outline-info">
+                            <i class="fas fa-file-alt"></i> View Delivery Note
+                        </a>
+                        
+                        <a href="{% url 'delivery:grv_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to GRVs
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delivery Information Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Delivery Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Delivery #:</th>
+                            <td>
+                                <a href="{% url 'delivery:delivery_detail' grv.delivery.pk %}">
+                                    {{ grv.delivery.delivery_number }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Driver:</th>
+                            <td>{{ grv.delivery.driver_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Truck:</th>
+                            <td>{{ grv.delivery.truck_registration }}</td>
+                        </tr>
+                        <tr>
+                            <th>Delivery Date:</th>
+                            <td>{{ grv.delivery.departure_time|date:"Y-m-d" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Client Information Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Client Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Client:</th>
+                            <td>{{ grv.hire_order.client.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Contact:</th>
+                            <td>{{ grv.hire_order.client.contact_person }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone:</th>
+                            <td>{{ grv.hire_order.client.phone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ grv.hire_order.client.email }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

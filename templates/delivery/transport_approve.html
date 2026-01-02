@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Approve Transport Request: {{ transportrequest.request_number }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:transport_list' %}">Transport Requests</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:transport_detail' transportrequest.pk %}">{{ transportrequest.request_number }}</a></li>
+                    <li class="breadcrumb-item active">Approve</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Approve Request</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        You are about to approve this transport request. This will make it available for delivery scheduling.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Original Request Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Order:</strong> {{ transportrequest.hire_order.order_number }}</p>
+                                        <p><strong>Required Date:</strong> {{ transportrequest.required_date }}</p>
+                                        <p><strong>Truck Type:</strong> {{ transportrequest.get_truck_type_required_display }}</p>
+                                        <p><strong>Delivery Address:</strong><br>{{ transportrequest.delivery_address|linebreaks }}</p>
+                                        {% if transportrequest.special_instructions %}
+                                        <p><strong>Special Instructions:</strong><br>{{ transportrequest.special_instructions|linebreaks }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Approval Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ form.truck_type_required|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" required id="confirmApprove">
+                                <label class="form-check-label" for="confirmApprove">
+                                    I confirm that I have reviewed this transport request and approve it for delivery scheduling.
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                                <i class="fas fa-check"></i> Approve Transport Request
+                            </button>
+                            <a href="{% url 'delivery:transport_detail' transportrequest.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Request Summary</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Request #:</th>
+                            <td>{{ transportrequest.request_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Order #:</th>
+                            <td>{{ transportrequest.hire_order.order_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Client:</th>
+                            <td>{{ transportrequest.hire_order.client.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Requested By:</th>
+                            <td>{{ transportrequest.requested_by.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Request Date:</th>
+                            <td>{{ transportrequest.request_date }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Enable submit button only when checkbox is checked
+    $('#confirmApprove').change(function() {
+        $('#submitBtn').prop('disabled', !$(this).is(':checked'));
+    });
+});
+</script>
+{% endblock %}

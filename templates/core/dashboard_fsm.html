@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}FSM Dashboard - Formwork System{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <h1 class="text-2xl font-semibold text-gray-900">Manager Dashboard</h1>
+        <p class="mt-2 text-sm text-gray-700">Welcome back, {{ user.get_full_name|default:user.username }}. Here's what's happening with your business.</p>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-8">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Revenue Card -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-money-bill-wave text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Revenue This Month
+                                </dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        $125,450
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+15% vs last month</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="relative pt-1">
+                                <div class="overflow-hidden h-2 text-xs flex rounded bg-green-100">
+                                    <div style="width: 84%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">84% of $150,000 target</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Rentals Card -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-clipboard-list text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Active Rentals
+                                </dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        18
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="text-sm text-gray-500">
+                            <span class="text-green-600 font-medium">78%</span> utilization rate
+                        </div>
+                        <div class="mt-2 text-xs">
+                            <span class="text-green-600"><i class="fas fa-check-circle"></i> 92% on-time returns</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Approvals Card -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Pending Approvals
+                                </dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        6
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="text-sm">
+                            <span class="text-yellow-600 font-medium">2</span> quotations over $10,000
+                            <br>
+                            <span class="text-yellow-600 font-medium">3</span> transport requests
+                            <br>
+                            <span class="text-yellow-600 font-medium">1</span> lease agreement to sign
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overdue Returns Card -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Overdue Returns
+                                </dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        3
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="text-sm text-red-600">
+                            <i class="fas fa-calendar-times mr-1"></i> Total penalties: $750
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            Follow up with clients
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Tables Section -->
+        <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <!-- Revenue Chart -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Revenue Overview</h3>
+                <div class="h-64 flex items-center justify-center text-gray-500">
+                    <!-- Chart would go here -->
+                    <div class="text-center">
+                        <i class="fas fa-chart-line text-4xl text-gray-300 mb-2"></i>
+                        <p>Revenue chart visualization</p>
+                        <p class="text-sm mt-2">Last 6 months: $625,000 total</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Clients -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Top Clients (YTD)</h3>
+                <div class="space-y-4">
+                    {% for client in top_clients %}
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-building text-blue-600"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <div class="flex justify-between">
+                                <p class="text-sm font-medium text-gray-900">{{ client.name }}</p>
+                                <p class="text-sm text-gray-500">${{ client.total|floatformat:0|intcomma }}</p>
+                            </div>
+                            <div class="mt-1">
+                                <div class="relative pt-1">
+                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-100">
+                                        <div style="width: {{ client.percentage }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-users text-3xl mb-2"></i>
+                        <p>No client data available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity and Quick Actions -->
+        <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <!-- Recent Orders -->
+            <div class="bg-white shadow rounded-lg p-6 lg:col-span-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Recent Orders</h3>
+                    <a href="{% url 'hiring:order_list' %}" class="text-sm text-blue-600 hover:text-blue-500">
+                        View all <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Order #
+                                </th>
+                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Client
+                                </th>
+                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Amount
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for order in recent_orders %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <a href="{% url 'hiring:order_detail' pk=order.pk %}" class="text-blue-600 hover:text-blue-900">
+                                        {{ order.order_number }}
+                                    </a>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                    {{ order.client.name|truncatechars:20 }}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {% if order.status == 'COMPLETED' %}bg-green-100 text-green-800
+                                        {% elif order.status == 'ACTIVE' %}bg-blue-100 text-blue-800
+                                        {% elif order.status == 'OVERDUE' %}bg-red-100 text-red-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                    ${{ order.get_total_amount|floatformat:2|intcomma }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                    No recent orders
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'hiring:rfq_create' %}" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-quote-right text-blue-600"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">Create RFQ</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                    
+                    <a href="{% url 'inventory:material_create' %}" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-box text-green-600"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">Add Material</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                    
+                    <a href="" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-chart-bar text-purple-600"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">Generate Reports</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                    
+                    <a href="{% url 'hiring:order_list' %}?status=ACTIVE" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">View Active Rentals</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">System Status</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Inventory Items</span>
+                            <span class="font-medium">{{ inventory_count }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Active Users</span>
+                            <span class="font-medium">{{ active_users }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Pending Inspections</span>
+                            <span class="font-medium">{{ pending_inspections }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Uptime</span>
+                            <span class="font-medium text-green-600">99.8%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh dashboard every 60 seconds
+    setTimeout(function() {
+        window.location.reload();
+    }, 60000);
+});
+</script>
+{% endblock %}

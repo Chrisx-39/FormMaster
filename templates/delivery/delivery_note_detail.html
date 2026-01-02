@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Delivery Note: {{ delivery_note.note_number }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:delivery_list' %}">Deliveries</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:delivery_detail' delivery_note.delivery.pk %}">{{ delivery_note.delivery.delivery_number }}</a></li>
+                    <li class="breadcrumb-item active">Delivery Note</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                <a href="{% url 'delivery:delivery_note_pdf' delivery_note.pk %}" class="btn btn-success">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </a>
+                <a href="{% url 'delivery:delivery_detail' delivery_note.delivery.pk %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Delivery
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Delivery Note Details Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Delivery Note Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Note Number:</th>
+                                    <td><strong>{{ delivery_note.note_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Delivery Number:</th>
+                                    <td>
+                                        <a href="{% url 'delivery:delivery_detail' delivery_note.delivery.pk %}">
+                                            {{ delivery_note.delivery.delivery_number }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Order Number:</th>
+                                    <td>
+                                        <a href="{% url 'hiring:order_detail' delivery_note.delivery.hire_order.pk %}">
+                                            {{ delivery_note.delivery.hire_order.order_number }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Issued Date:</th>
+                                    <td>{{ delivery_note.issued_date }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Client:</th>
+                                    <td>{{ delivery_note.delivery.hire_order.client.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Driver:</th>
+                                    <td>{{ delivery_note.delivery.driver_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Truck:</th>
+                                    <td>{{ delivery_note.delivery.truck_registration }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fully Signed:</th>
+                                    <td>
+                                        <span class="badge bg-{% if delivery_note.is_fully_signed %}success{% else %}warning{% endif %}">
+                                            {{ delivery_note.is_fully_signed|yesno:"Yes,No" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Delivery Address:</h6>
+                            <p class="mb-3">{{ delivery_note.delivery.delivery_address|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Items Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Delivery Items</h5>
+                        {% if not delivery_note.is_fully_signed %}
+                        <a href="{% url 'delivery:delivery_note_items_update' delivery_note.pk %}" 
+                           class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Edit Items
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Condition</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in delivery_note.items.all %}
+                                <tr>
+                                    <td>{{ item.material.name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if item.condition == 'GOOD' %}success{% elif item.condition == 'FAIR' %}warning{% elif item.condition == 'POOR' %}danger{% else %}secondary{% endif %}">
+                                            {{ item.get_condition_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ item.notes|default:"-" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <i class="fas fa-box-open fa-2x text-muted mb-3"></i>
+                                        <p class="text-muted">No items added to this delivery note.</p>
+                                        <a href="{% url 'delivery:delivery_note_items_update' delivery_note.pk %}" 
+                                           class="btn btn-primary">
+                                            <i class="fas fa-plus"></i> Add Items
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Signatures Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Signatures</h5>
+                </div>
+                <div class="card-body">
+                    <div class="signature-section mb-4">
+                        <h6>Driver Signature</h6>
+                        <div class="card {% if delivery_note.signed_by_driver %}border-success{% else %}border-secondary{% endif %}">
+                            <div class="card-body text-center">
+                                {% if delivery_note.signed_by_driver %}
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="mb-1"><strong>Signed</strong></p>
+                                <small class="text-muted">
+                                    {{ delivery_note.driver_signature_date|date:"Y-m-d H:i" }}
+                                </small>
+                                {% else %}
+                                <i class="fas fa-signature fa-2x text-muted mb-2"></i>
+                                <p class="mb-1"><strong>Pending</strong></p>
+                                {% if user.is_hce or user.is_scaffolder or user.is_admin %}
+                                <a href="{% url 'delivery:delivery_note_sign' delivery_note.pk 'driver' %}" 
+                                   class="btn btn-sm btn-outline-primary mt-2"
+                                   onclick="return confirm('Sign as driver?');">
+                                    <i class="fas fa-signature"></i> Sign as Driver
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="signature-section mb-4">
+                        <h6>Scaffolder Signature</h6>
+                        <div class="card {% if delivery_note.signed_by_scaffolder %}border-success{% else %}border-secondary{% endif %}">
+                            <div class="card-body text-center">
+                                {% if delivery_note.signed_by_scaffolder %}
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="mb-1"><strong>Signed</strong></p>
+                                <small class="text-muted">
+                                    {{ delivery_note.scaffolder_signature_date|date:"Y-m-d H:i" }}
+                                </small>
+                                {% else %}
+                                <i class="fas fa-signature fa-2x text-muted mb-2"></i>
+                                <p class="mb-1"><strong>Pending</strong></p>
+                                {% if user.is_scaffolder or user.is_admin %}
+                                <a href="{% url 'delivery:delivery_note_sign' delivery_note.pk 'scaffolder' %}" 
+                                   class="btn btn-sm btn-outline-primary mt-2"
+                                   onclick="return confirm('Sign as scaffolder?');">
+                                    <i class="fas fa-signature"></i> Sign as Scaffolder
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="signature-section mb-4">
+                        <h6>Security Signature</h6>
+                        <div class="card {% if delivery_note.signed_by_security %}border-success{% else %}border-secondary{% endif %}">
+                            <div class="card-body text-center">
+                                {% if delivery_note.signed_by_security %}
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="mb-1"><strong>Signed</strong></p>
+                                <small class="text-muted">
+                                    {{ delivery_note.security_signature_date|date:"Y-m-d H:i" }}
+                                </small>
+                                {% else %}
+                                <i class="fas fa-signature fa-2x text-muted mb-2"></i>
+                                <p class="mb-1"><strong>Pending</strong></p>
+                                {% if user.is_hce or user.is_admin %}
+                                <a href="{% url 'delivery:delivery_note_sign' delivery_note.pk 'security' %}" 
+                                   class="btn btn-sm btn-outline-primary mt-2"
+                                   onclick="return confirm('Sign as security?');">
+                                    <i class="fas fa-signature"></i> Sign as Security
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="signature-section">
+                        <h6>Client Signature</h6>
+                        <div class="card {% if delivery_note.signed_by_client %}border-success{% else %}border-secondary{% endif %}">
+                            <div class="card-body text-center">
+                                {% if delivery_note.signed_by_client %}
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="mb-1"><strong>Signed</strong></p>
+                                <small class="text-muted">
+                                    {{ delivery_note.client_signature_date|date:"Y-m-d H:i" }}
+                                </small>
+                                {% else %}
+                                <i class="fas fa-signature fa-2x text-muted mb-2"></i>
+                                <p class="mb-1"><strong>Pending</strong></p>
+                                <small class="text-muted">To be signed by client upon delivery</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'delivery:delivery_note_pdf' delivery_note.pk %}" 
+                           class="btn btn-success">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </a>
+                        
+                        {% if not delivery_note.is_fully_signed %}
+                        <a href="{% url 'delivery:delivery_note_update' delivery_note.pk %}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Update Signatures
+                        </a>
+                        <a href="{% url 'delivery:delivery_note_items_update' delivery_note.pk %}" 
+                           class="btn btn-outline-warning">
+                            <i class="fas fa-boxes"></i> Edit Items
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'delivery:delivery_detail' delivery_note.delivery.pk %}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-truck"></i> View Delivery
+                        </a>
+                        
+                        <a href="{% url 'delivery:delivery_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Deliveries
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.signature-section {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+}
+
+.signature-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.signature-section h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Document Management Dashboard</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active">Documents</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-plus"></i> Generate Document
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'hiring:quotation_list' %}">Generate Quotation</a></li>
+                    <li><a class="dropdown-item" href="{% url 'finance:invoice_list' %}">Generate Invoice</a></li>
+                    <li><a class="dropdown-item" href="{% url 'delivery:delivery_list' %}">Generate Delivery Note</a></li>
+                    <li><a class="dropdown-item" href="{% url 'delivery:grv_list' %}">Generate GRV</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Documents
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_documents }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                This Month
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ monthly_documents }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Templates
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ templates_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-code fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Signatures
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_signatures }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-signature fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Documents -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Documents</h6>
+                    <a href="{% url 'documents:document_list' %}" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Document #</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Generated By</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doc in recent_documents %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ doc.document_number }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ doc.get_document_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if doc.status == 'SENT' %}warning{% elif doc.status == 'SIGNED' %}success{% elif doc.status == 'ARCHIVED' %}secondary{% else %}primary{% endif %}">
+                                            {{ doc.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ doc.generated_by.get_full_name }}</td>
+                                    <td>{{ doc.generated_at|date:"Y-m-d H:i" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'documents:document_detail' doc.pk %}" 
+                                               class="btn btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'documents:document_download' doc.pk %}" 
+                                               class="btn btn-outline-success" title="Download">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-file-alt fa-2x text-muted mb-3"></i>
+                                        <p class="text-muted">No documents generated yet.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Types Distribution -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Document Types</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="docTypeChart" width="100%" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'documents:template_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file-code me-2"></i> Manage Templates
+                        </a>
+                        <a href="{% url 'documents:settings' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cog me-2"></i> Document Settings
+                        </a>
+                        <a href="{% url 'documents:stats' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-chart-bar me-2"></i> View Statistics
+                        </a>
+                        {% if user.is_admin or user.is_fsm %}
+                        <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tools me-2"></i> Admin Panel
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+$(document).ready(function() {
+    // Document Type Chart
+    const typeData = {
+        labels: [
+            {% for type in document_types %}
+            "{{ type.document_type }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for type in document_types %}
+                {{ type.count }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', 
+                '#e74a3b', '#858796', '#5a5c69'
+            ],
+            hoverOffset: 4
+        }]
+    };
+
+    const typeConfig = {
+        type: 'doughnut',
+        data: typeData,
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    };
+
+    const typeChart = new Chart(
+        document.getElementById('docTypeChart'),
+        typeConfig
+    );
+});
+</script>
+{% endblock %}

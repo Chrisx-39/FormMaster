@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Transport Request: {{ request.request_number }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'delivery:transport_list' %}">Transport Requests</a></li>
+                    <li class="breadcrumb-item active">{{ request.request_number }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                {% if request.status == 'PENDING' and user.is_fsm or user.is_admin %}
+                <a href="{% url 'delivery:transport_approve' request.pk %}" class="btn btn-success">
+                    <i class="fas fa-check"></i> Approve
+                </a>
+                {% endif %}
+                {% if request.status == 'PENDING' or request.status == 'APPROVED' %}
+                <a href="{% url 'delivery:transport_update' request.pk %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                {% endif %}
+                <a href="{% url 'delivery:transport_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Information Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Request Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Request Number:</th>
+                                    <td><strong>{{ request.request_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Order Number:</th>
+                                    <td>
+                                        <a href="{% url 'hiring:order_detail' request.hire_order.pk %}">
+                                            {{ request.hire_order.order_number }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Requested By:</th>
+                                    <td>{{ request.requested_by.get_full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Request Date:</th>
+                                    <td>{{ request.request_date }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Required Date:</th>
+                                    <td>{{ request.required_date }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Status:</th>
+                                    <td>
+                                        <span class="badge bg-{% if request.status == 'PENDING' %}warning{% elif request.status == 'APPROVED' %}success{% elif request.status == 'REJECTED' %}danger{% elif request.status == 'COMPLETED' %}info{% else %}secondary{% endif %}">
+                                            {{ request.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Truck Type:</th>
+                                    <td>{{ request.get_truck_type_required_display }}</td>
+                                </tr>
+                                {% if request.approved_by %}
+                                <tr>
+                                    <th>Approved By:</th>
+                                    <td>{{ request.approved_by.get_full_name }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>Created:</th>
+                                    <td>{{ request.created_at|timesince }} ago</td>
+                                </tr>
+                                <tr>
+                                    <th>Last Updated:</th>
+                                    <td>{{ request.updated_at|timesince }} ago</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Delivery Address:</h6>
+                            <p class="mb-3">{{ request.delivery_address|linebreaks }}</p>
+                            
+                            {% if request.special_instructions %}
+                            <h6>Special Instructions:</h6>
+                            <p class="mb-0">{{ request.special_instructions|linebreaks }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Client Information Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Client Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Client Details</h6>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Client Name:</th>
+                                    <td>{{ request.hire_order.client.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Contact Person:</th>
+                                    <td>{{ request.hire_order.client.contact_person }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone:</th>
+                                    <td>{{ request.hire_order.client.phone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ request.hire_order.client.email }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Order Information</h6>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Order Date:</th>
+                                    <td>{{ request.hire_order.order_date }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Project:</th>
+                                    <td>{{ request.hire_order.project_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Site Location:</th>
+                                    <td>{{ request.hire_order.site_location }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Actions Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if request.status == 'APPROVED' %}
+                        <a href="{% url 'delivery:delivery_create' %}?order_id={{ request.hire_order.pk }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-shipping-fast"></i> Create Delivery
+                        </a>
+                        {% endif %}
+                        
+                        {% if request.status == 'PENDING' and user.is_fsm or user.is_admin %}
+                        <a href="{% url 'delivery:transport_approve' request.pk %}" 
+                           class="btn btn-success">
+                            <i class="fas fa-check"></i> Approve Request
+                        </a>
+                        {% endif %}
+                        
+                        {% if request.status == 'PENDING' or request.status == 'APPROVED' %}
+                        <a href="{% url 'delivery:transport_update' request.pk %}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit Request
+                        </a>
+                        
+                        {% if request.status == 'PENDING' or request.status == 'APPROVED' %}
+                        <form method="post" action="{% url 'delivery:transport_cancel' request.pk %}" 
+                              onsubmit="return confirm('Are you sure you want to cancel this request?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="fas fa-times"></i> Cancel Request
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% endif %}
+                        
+                        <a href="{% url 'delivery:transport_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Status History Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">Request Created</h6>
+                                <p class="text-muted mb-0">{{ request.request_date }}</p>
+                                <small>By {{ request.requested_by.get_full_name }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if request.approved_by %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">Request Approved</h6>
+                                <p class="text-muted mb-0">Status changed to Approved</p>
+                                <small>By {{ request.approved_by.get_full_name }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">Last Updated</h6>
+                                <p class="text-muted mb-0">{{ request.updated_at }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -20px;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    padding-left: 10px;
+}
+
+.timeline-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}
