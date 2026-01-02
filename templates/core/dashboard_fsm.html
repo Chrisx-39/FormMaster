@@ -1,347 +1,555 @@
 {% extends "base.html" %}
 {% load humanize %}
 
-{% block title %}FSM Dashboard - Formwork System{% endblock %}
+{% block title %}Enterprise Dashboard - FormworkPro{% endblock %}
+
+{% block page_title %}Enterprise Dashboard{% endblock %}
+{% block page_subtitle %}Welcome back, {{ user.get_full_name|default:user.username }}. Here's your business overview.{% endblock %}
+
+{% block breadcrumb %}
+<li>
+    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+</li>
+<li>
+    <span class="text-gray-900 font-medium">Dashboard</span>
+</li>
+{% endblock %}
+
+{% block page_actions %}
+<button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+    <i class="fas fa-download mr-2"></i>
+    Export
+</button>
+<button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+    <i class="fas fa-plus mr-2"></i>
+    New RFQ
+</button>
+{% endblock %}
 
 {% block content %}
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <h1 class="text-2xl font-semibold text-gray-900">Manager Dashboard</h1>
-        <p class="mt-2 text-sm text-gray-700">Welcome back, {{ user.get_full_name|default:user.username }}. Here's what's happening with your business.</p>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- Revenue Card -->
+    <div class="dashboard-card-hover bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-white text-lg"></i>
+                </div>
+            </div>
+            <div class="ml-5">
+                <p class="text-sm font-medium text-gray-500">Monthly Revenue</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">$125,450</p>
+                <div class="flex items-center mt-2">
+                    <span class="text-green-600 text-sm font-medium">
+                        <i class="fas fa-arrow-up mr-1"></i>15.2%
+                    </span>
+                    <span class="text-gray-500 text-sm ml-2">vs last month</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Target: $150,000</span>
+                <span class="font-medium text-gray-900">84%</span>
+            </div>
+            <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 h-2 rounded-full" style="width: 84%"></div>
+            </div>
+        </div>
     </div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-8">
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <!-- Revenue Card -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                                <i class="fas fa-money-bill-wave text-green-600"></i>
-                            </div>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Revenue This Month
-                                </dt>
-                                <dd>
-                                    <div class="text-lg font-medium text-gray-900">
-                                        $125,450
-                                    </div>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="flex items-center text-sm text-green-600">
-                            <i class="fas fa-arrow-up mr-1"></i>
-                            <span>+15% vs last month</span>
-                        </div>
-                        <div class="mt-2">
-                            <div class="relative pt-1">
-                                <div class="overflow-hidden h-2 text-xs flex rounded bg-green-100">
-                                    <div style="width: 84%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
-                                </div>
-                                <div class="text-xs text-gray-500 mt-1">84% of $150,000 target</div>
-                            </div>
-                        </div>
-                    </div>
+
+    <!-- Active Projects -->
+    <div class="dashboard-card-hover bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                    <i class="fas fa-hard-hat text-white text-lg"></i>
                 </div>
             </div>
-
-            <!-- Active Rentals Card -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <i class="fas fa-clipboard-list text-blue-600"></i>
-                            </div>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Active Rentals
-                                </dt>
-                                <dd>
-                                    <div class="text-lg font-medium text-gray-900">
-                                        18
-                                    </div>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="text-sm text-gray-500">
-                            <span class="text-green-600 font-medium">78%</span> utilization rate
-                        </div>
-                        <div class="mt-2 text-xs">
-                            <span class="text-green-600"><i class="fas fa-check-circle"></i> 92% on-time returns</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pending Approvals Card -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                                <i class="fas fa-clock text-yellow-600"></i>
-                            </div>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Pending Approvals
-                                </dt>
-                                <dd>
-                                    <div class="text-lg font-medium text-gray-900">
-                                        6
-                                    </div>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="text-sm">
-                            <span class="text-yellow-600 font-medium">2</span> quotations over $10,000
-                            <br>
-                            <span class="text-yellow-600 font-medium">3</span> transport requests
-                            <br>
-                            <span class="text-yellow-600 font-medium">1</span> lease agreement to sign
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Overdue Returns Card -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle text-red-600"></i>
-                            </div>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
-                                    Overdue Returns
-                                </dt>
-                                <dd>
-                                    <div class="text-lg font-medium text-gray-900">
-                                        3
-                                    </div>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="text-sm text-red-600">
-                            <i class="fas fa-calendar-times mr-1"></i> Total penalties: $750
-                        </div>
-                        <div class="mt-2 text-xs text-gray-500">
-                            Follow up with clients
-                        </div>
-                    </div>
+            <div class="ml-5">
+                <p class="text-sm font-medium text-gray-500">Active Projects</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">18</p>
+                <div class="flex items-center mt-2">
+                    <span class="status-indicator bg-green-500"></span>
+                    <span class="text-green-600 text-sm font-medium">14 On Track</span>
+                    <span class="text-gray-500 text-sm ml-2">•</span>
+                    <span class="status-indicator bg-yellow-500 ml-2"></span>
+                    <span class="text-yellow-600 text-sm font-medium">4 At Risk</span>
                 </div>
             </div>
         </div>
+        <div class="mt-6">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Utilization Rate</span>
+                <span class="font-medium text-gray-900">78%</span>
+            </div>
+            <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-blue-500 to-cyan-600 h-2 rounded-full" style="width: 78%"></div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Charts and Tables Section -->
-        <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <!-- Revenue Chart -->
-            <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Revenue Overview</h3>
-                <div class="h-64 flex items-center justify-center text-gray-500">
-                    <!-- Chart would go here -->
-                    <div class="text-center">
-                        <i class="fas fa-chart-line text-4xl text-gray-300 mb-2"></i>
-                        <p>Revenue chart visualization</p>
-                        <p class="text-sm mt-2">Last 6 months: $625,000 total</p>
-                    </div>
+    <!-- Inventory Health -->
+    <div class="dashboard-card-hover bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                    <i class="fas fa-boxes text-white text-lg"></i>
                 </div>
             </div>
-
-            <!-- Top Clients -->
-            <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Top Clients (YTD)</h3>
-                <div class="space-y-4">
-                    {% for client in top_clients %}
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <i class="fas fa-building text-blue-600"></i>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <div class="flex justify-between">
-                                <p class="text-sm font-medium text-gray-900">{{ client.name }}</p>
-                                <p class="text-sm text-gray-500">${{ client.total|floatformat:0|intcomma }}</p>
-                            </div>
-                            <div class="mt-1">
-                                <div class="relative pt-1">
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-100">
-                                        <div style="width: {{ client.percentage }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-users text-3xl mb-2"></i>
-                        <p>No client data available</p>
-                    </div>
-                    {% endfor %}
+            <div class="ml-5">
+                <p class="text-sm font-medium text-gray-500">Inventory Health</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">92%</p>
+                <div class="flex items-center mt-2">
+                    <span class="text-green-600 text-sm font-medium">
+                        <i class="fas fa-check-circle mr-1"></i>Good
+                    </span>
+                    <span class="text-gray-500 text-sm ml-2">• 3 items low stock</span>
                 </div>
             </div>
         </div>
+        <div class="mt-6">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Total Items: 1,248</span>
+                <span class="font-medium text-gray-900">$450K Value</span>
+            </div>
+            <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full" style="width: 92%"></div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Recent Activity and Quick Actions -->
-        <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <!-- Recent Orders -->
-            <div class="bg-white shadow rounded-lg p-6 lg:col-span-2">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Recent Orders</h3>
-                    <a href="{% url 'hiring:order_list' %}" class="text-sm text-blue-600 hover:text-blue-500">
-                        View all <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Order #
-                                </th>
-                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Client
-                                </th>
-                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Amount
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            {% for order in recent_orders %}
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <a href="{% url 'hiring:order_detail' pk=order.pk %}" class="text-blue-600 hover:text-blue-900">
-                                        {{ order.order_number }}
-                                    </a>
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                    {{ order.client.name|truncatechars:20 }}
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {% if order.status == 'COMPLETED' %}bg-green-100 text-green-800
-                                        {% elif order.status == 'ACTIVE' %}bg-blue-100 text-blue-800
-                                        {% elif order.status == 'OVERDUE' %}bg-red-100 text-red-800
-                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                        {{ order.get_status_display }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                    ${{ order.get_total_amount|floatformat:2|intcomma }}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                                    No recent orders
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    <!-- Pending Actions -->
+    <div class="dashboard-card-hover bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <i class="fas fa-clock text-white text-lg"></i>
                 </div>
             </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                <div class="space-y-3">
-                    <a href="{% url 'hiring:rfq_create' %}" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                <i class="fas fa-quote-right text-blue-600"></i>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">Create RFQ</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </a>
-                    
-                    <a href="{% url 'inventory:material_create' %}" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                                <i class="fas fa-box text-green-600"></i>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">Add Material</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </a>
-                    
-                    <a href="" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                                <i class="fas fa-chart-bar text-purple-600"></i>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">Generate Reports</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </a>
-                    
-                    <a href="{% url 'hiring:order_list' %}?status=ACTIVE" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
-                                <i class="fas fa-clock text-yellow-600"></i>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">View Active Rentals</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </a>
+            <div class="ml-5">
+                <p class="text-sm font-medium text-gray-500">Pending Actions</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">12</p>
+                <div class="flex items-center mt-2 space-x-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        3 Urgent
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        5 Today
+                    </span>
                 </div>
-                
-                <div class="mt-6 pt-6 border-t border-gray-200">
-                    <h4 class="text-sm font-medium text-gray-900 mb-3">System Status</h4>
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Inventory Items</span>
-                            <span class="font-medium">{{ inventory_count }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Active Users</span>
-                            <span class="font-medium">{{ active_users }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Pending Inspections</span>
-                            <span class="font-medium">{{ pending_inspections }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Uptime</span>
-                            <span class="font-medium text-green-600">99.8%</span>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="mt-6">
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div>
+                    <p class="text-lg font-bold text-gray-900">2</p>
+                    <p class="text-xs text-gray-500">RFQs</p>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-gray-900">3</p>
+                    <p class="text-xs text-gray-500">Approvals</p>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-gray-900">7</p>
+                    <p class="text-xs text-gray-500">Inspections</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Charts Section -->
+<div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Revenue Chart -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-gray-900">Revenue Overview</h3>
+            <div class="flex items-center space-x-2">
+                <button class="px-3 py-1 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    Monthly
+                </button>
+                <button class="px-3 py-1 text-sm rounded-lg text-gray-600 hover:bg-gray-100">
+                    Quarterly
+                </button>
+                <button class="px-3 py-1 text-sm rounded-lg text-gray-600 hover:bg-gray-100">
+                    Yearly
+                </button>
+            </div>
+        </div>
+        <div class="h-72">
+            <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="mt-6 grid grid-cols-4 gap-4 text-center">
+            <div>
+                <p class="text-sm text-gray-500">Total Revenue</p>
+                <p class="text-lg font-semibold text-gray-900">$625K</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Growth</p>
+                <p class="text-lg font-semibold text-green-600">+15.2%</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Avg. Order</p>
+                <p class="text-lg font-semibold text-gray-900">$8,450</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Projects</p>
+                <p class="text-lg font-semibold text-gray-900">42</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Status -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-gray-900">Project Status</h3>
+            <a href="#" class="text-sm text-blue-600 hover:text-blue-500 font-medium">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        <div class="space-y-4">
+            {% for project in projects %}
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-hard-hat text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4 flex-1">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-gray-900">{{ project.name }}</p>
+                        <p class="text-sm font-medium text-gray-900">${{ project.revenue|floatformat:0|intcomma }}</p>
+                    </div>
+                    <div class="mt-1">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-500">{{ project.client }}</span>
+                            <span class="font-medium {% if project.status == 'on_track' %}text-green-600{% else %}text-yellow-600{% endif %}">
+                                {{ project.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="mt-1 w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="h-1.5 rounded-full {% if project.status == 'on_track' %}bg-green-500{% else %}bg-yellow-500{% endif %}" 
+                                 style="width: {{ project.progress }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8">
+                <i class="fas fa-hard-hat text-4xl text-gray-300 mb-3"></i>
+                <p class="text-gray-500">No active projects</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity & Quick Stats -->
+<div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Recent Orders -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
+            <a href="{% url 'hiring:order_list' %}" class="text-sm text-blue-600 hover:text-blue-500 font-medium">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Order #
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Client
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Project
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Amount
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for order in recent_orders %}
+                    <tr class="table-row-hover">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-8 w-8 rounded-md bg-blue-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-file-invoice text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <a href="{% url 'hiring:order_detail' pk=order.pk %}" class="text-sm font-medium text-blue-600 hover:text-blue-900">
+                                        {{ order.order_number }}
+                                    </a>
+                                    <p class="text-xs text-gray-500">{{ order.created_at|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                                    <i class="fas fa-building text-gray-600"></i>
+                                </div>
+                                <span class="text-sm text-gray-900">{{ order.client.name|truncatechars:15 }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ order.project|default:"-"|truncatechars:20 }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                {% if order.status == 'COMPLETED' %}bg-green-100 text-green-800
+                                {% elif order.status == 'ACTIVE' %}bg-blue-100 text-blue-800
+                                {% elif order.status == 'PENDING' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'OVERDUE' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {% if order.status == 'ACTIVE' %}
+                                <span class="status-indicator bg-blue-500"></span>
+                                {% elif order.status == 'OVERDUE' %}
+                                <span class="status-indicator bg-red-500"></span>
+                                {% endif %}
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ${{ order.get_total_amount|floatformat:2|intcomma }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center">
+                            <i class="fas fa-inbox text-3xl text-gray-300 mb-2"></i>
+                            <p class="text-gray-500">No recent orders</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Quick Stats & Actions -->
+    <div class="space-y-6">
+        <!-- System Health -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">System Health</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="status-indicator bg-green-500"></span>
+                        <span class="text-sm text-gray-700">Application</span>
+                    </div>
+                    <span class="text-sm font-medium text-green-600">Operational</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="status-indicator bg-green-500"></span>
+                        <span class="text-sm text-gray-700">Database</span>
+                    </div>
+                    <span class="text-sm font-medium text-green-600">100%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="status-indicator bg-green-500"></span>
+                        <span class="text-sm text-gray-700">API</span>
+                    </div>
+                    <span class="text-sm font-medium text-green-600">99.8%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="status-indicator bg-yellow-500"></span>
+                        <span class="text-sm text-gray-700">Storage</span>
+                    </div>
+                    <span class="text-sm font-medium text-yellow-600">78% used</span>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500">Uptime (30 days)</span>
+                    <span class="font-medium text-gray-900">99.95%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <div class="space-y-3">
+                <a href="{% url 'hiring:rfq_create' %}" 
+                   class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-150">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-file-contract text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Create RFQ</p>
+                            <p class="text-xs text-gray-500">New quotation request</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="{% url 'inventory:material_create' %}" 
+                   class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors duration-150">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-box text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Add Material</p>
+                            <p class="text-xs text-gray-500">New inventory item</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="#" 
+                   class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-colors duration-150">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-bar text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Generate Report</p>
+                            <p class="text-xs text-gray-500">Monthly performance</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="" 
+                   class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-colors duration-150">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-clipboard-check text-orange-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Pending Inspections</p>
+                            <p class="text-xs text-gray-500">{{ pending_inspections }} awaiting</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Timeline -->
+<div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
+    <div class="relative">
+        <!-- Timeline -->
+        <div class="space-y-6">
+            {% for activity in recent_activities %}
+            <div class="flex">
+                <div class="flex-shrink-0 mr-4">
+                    <div class="h-10 w-10 rounded-full flex items-center justify-center 
+                        {% cycle 'bg-blue-100' 'bg-green-100' 'bg-purple-100' 'bg-yellow-100' %}">
+                        <i class="fas {% cycle 'fa-file-contract' 'fa-check-circle' 'fa-user-plus' 'fa-comment-dollar' %} 
+                            {% cycle 'text-blue-600' 'text-green-600' 'text-purple-600' 'text-yellow-600' %}"></i>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
+                        <span class="text-xs text-gray-500">{{ activity.time }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">{{ activity.description }}</p>
+                    {% if activity.user %}
+                    <div class="flex items-center mt-2">
+                        <div class="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span class="text-xs font-medium">{{ activity.user.username|first|upper }}</span>
+                        </div>
+                        <span class="text-xs text-gray-500 ml-2">{{ activity.user.get_full_name|default:activity.user.username }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8">
+                <i class="fas fa-stream text-3xl text-gray-300 mb-2"></i>
+                <p class="text-gray-500">No recent activity</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-refresh dashboard every 60 seconds
-    setTimeout(function() {
-        window.location.reload();
-    }, 60000);
+    // Initialize Revenue Chart
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            datasets: [{
+                label: 'Revenue',
+                data: [85000, 92000, 105000, 115000, 125000, 134000, 125450],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + (value / 1000) + 'k';
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Auto-refresh every 2 minutes
+    setTimeout(() => {
+        showToast('Dashboard data refreshed', 'info');
+    }, 120000);
+
+    // Initialize tooltips
+    tippy('[data-tippy-content]', {
+        placement: 'top',
+        animation: 'shift-away',
+        theme: 'light'
+    });
 });
 </script>
 {% endblock %}
